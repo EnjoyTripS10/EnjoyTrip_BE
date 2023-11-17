@@ -1,5 +1,6 @@
-package request;
+package com.study.sociallogin.request;
 
+import com.study.sociallogin.dto.TripDetailDto;
 import com.study.sociallogin.dto.TripMemberDto;
 import lombok.Getter;
 
@@ -14,4 +15,5 @@ public class TripRequest {
     private String endDate;
     private List<TripMemberDto> users;
     private String tripDetails;
+    private List<List<TripDetailDto>> locationList;
 }

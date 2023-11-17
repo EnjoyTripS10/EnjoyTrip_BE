@@ -33,7 +33,7 @@ public class TripDetails {
     private int reviewType; // 계획일때 0 || 11 : 추천 12 : 비추천 13: 방문하지 않음 14: 보통
 
     @Column
-    private String tripDate;
+    private int tripDate;
     @Column(length = 500)
     private String memo;
 }

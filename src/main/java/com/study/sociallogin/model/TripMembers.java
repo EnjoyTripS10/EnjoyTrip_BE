@@ -24,7 +24,10 @@ public class TripMembers {
     @Column
     private Long tripId;
 
-    @Column(length = 50)
+    @Column
     private String userEmail;
+
+    @Column
+    private boolean owner;
 
 }
