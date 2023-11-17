@@ -1,20 +1,16 @@
 package com.study.sociallogin.controller;
 
+import com.study.sociallogin.dto.TripMemberDto;
 import com.study.sociallogin.model.TripMembers;
 import com.study.sociallogin.model.Trips;
-import com.study.sociallogin.repository.TripMemberRepository;
 import com.study.sociallogin.service.LocationService;
 import com.study.sociallogin.service.TripMemberService;
 import com.study.sociallogin.service.TripService;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import request.TripRequest;
 
 @CrossOrigin
 @RestController
@@ -28,13 +24,7 @@ public class TripController {
     private final LocationService locationService;
 
     @PostMapping
-    public ResponseEntity<HttpStatus> registerTrip(@RequestParam("title") String title,
-                                                   @RequestParam("content") String content,
-                                                   @RequestParam("type") int type,
-                                                   @RequestParam("startDate")  String startDate,
-                                                   @RequestParam("endDate") String endDate,
-                                                   @RequestBody List<String> members,
-                                                   @RequestParam("tripDetails") String tripDetails) throws ParseException {
+    public ResponseEntity<HttpStatus> registerTrip(@RequestBody TripRequest tripRequest)  {
         System.out.println("create trip");
 
         //login check 해야함....
@@ -42,30 +32,31 @@ public class TripController {
 
         //trip 정보 저장
         Trips trip = Trips.builder()
-                .tripTitle(title)
-                .tripContent(content)
-                .tripType(type)
-                .tripStartDate(startDate)
-                .tripEndDate(endDate)
+                .tripTitle(tripRequest.getTitle())
+                .tripContent(tripRequest.getContent())
+                .tripType(tripRequest.getType())
+                .tripStartDate(tripRequest.getStartDate())
+                .tripEndDate(tripRequest.getEndDate())
                 .build();
 
         trip = tripService.createTrip(trip);
 
-
+        System.out.println(tripRequest.getStartDate());
         //사용자 trip member
-        members.add(userEmail);
+//        users.add(userEmail);
         TripMembers tripMember = TripMembers.builder()
                 .tripId(trip.getTripId())
                 .build();
 
-        for (String email: members) {
-            tripMember.setUserEmail(email);
-            tripMemberService.createTripMember(tripMember);
+        for (TripMemberDto member : tripRequest.getUsers()) {
+              System.out.println(member.getEmail() + " " + member.getName());
+//            tripMember.setUserEmail(email);
+//            tripMemberService.createTripMember(tripMember);
         }
 
         //trip detail 정보 파싱
-        JSONParser jsonParser = new JSONParser();
-        JSONObject detailJson = (JSONObject) jsonParser.parse(tripDetails);
+//        JSONParser jsonParser = new JSONParser();
+//        JSONObject detailJson = (JSONObject) jsonParser.parse(tripRequest.getTripDetails());
 
 
 

@@ -187,12 +187,12 @@ public class BoardController {
 
             Path dirPath = Paths.get(folderPath);
             DirectoryStream<Path> stream = Files.newDirectoryStream(dirPath);
-            List<String> imageList = new ArrayList<>();
+            List<byte[]> imageList = new ArrayList<>();
             for (Path filePath : stream) {
                 if (Files.isRegularFile(filePath)) {
                     // 첫 번째 이미지 파일을 찾았으므로 읽어서 반환
                     byte[] imageBytes = Files.readAllBytes(filePath);
-                    imageList.add(imageBytes.toString());
+                    imageList.add(imageBytes);
 
                 }
             }
@@ -207,7 +207,7 @@ public class BoardController {
 
             //좋아요 가져오기
             boardDto.setBoardLikes(boardLikeService.getBoardLikes(board.getBoardId()));
-            //좋아요 상승
+            //조회수 상승
             boardService.updateBoardHit(board.getBoardId());
 
             //내가 좋아요를 눌렀는지?

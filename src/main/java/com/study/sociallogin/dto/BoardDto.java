@@ -18,7 +18,7 @@ public class BoardDto {
     private int boardHit;
     private String userEmail;
     private Long locationId;
-    private List<String> image;
+    private List<byte[]> image;
     private String locationName;
     private String locationAddr;
     private String locationLat;
