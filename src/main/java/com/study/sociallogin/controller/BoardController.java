@@ -246,4 +246,42 @@ public class BoardController {
             return ResponseEntity.ok(HttpStatus.FORBIDDEN);
         return ResponseEntity.ok(HttpStatus.OK);
     }
+
+    @GetMapping("/search/{keyword}")
+    public ResponseEntity<List<BoardResponse>> getLikeSearchList(@PathVariable("keyword") String keyword) {
+        System.out.println("get board list");
+        String userEmail = "1";
+
+        List<Boards> boards = boardService.findSearchBoards(keyword);
+        List<BoardResponse> responses = new ArrayList<>();
+        for (Boards board: boards) {
+            BoardResponse boardRespose = BoardResponse.builder()
+                    .boardId(board.getBoardId())
+                    .boardTitle(board.getBoardTitle())
+                    .boardContent(board.getBoardContent())
+                    .createdAt(board.getCreatedAt().toString())
+                    .boardHit(board.getBoardHit())
+                    .userEmail(board.getUserEmail())
+                    .locationId(board.getLocationId())
+                    .build();
+            try {
+                String folderPath = filePath +"/" + board.getUserEmail() + "/" + board.getBoardId();
+
+                Path dirPath = Paths.get(folderPath);
+                DirectoryStream<Path> stream = Files.newDirectoryStream(dirPath);
+                for (Path filePath : stream) {
+                    if (Files.isRegularFile(filePath)) {
+                        // 첫 번째 이미지 파일을 찾았으므로 읽어서 반환
+                        byte[] imageBytes = Files.readAllBytes(filePath);
+                        boardRespose.setImage(imageBytes);
+                        responses.add(boardRespose);
+                        break;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return ResponseEntity.ok(responses);
+    }
 }

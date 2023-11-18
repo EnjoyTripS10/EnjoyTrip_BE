@@ -44,4 +44,12 @@ public class BoardService {
     public List<Boards> findBoardsLikedByUser(String userEmail) {
         return boardRepository.findBoardsLikedByUser(userEmail);
     }
+
+    public List<Boards> findSearchBoardsLikedByUser(String userEmail, String keyword) {
+        return boardRepository.findBoardsLikedByUserWithTitle(userEmail, keyword);
+    }
+
+    public List<Boards> findSearchBoards(String keyword) {
+        return boardRepository.findBoardsWithTitle(keyword);
+    }
 }

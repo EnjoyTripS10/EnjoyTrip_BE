@@ -11,4 +11,10 @@ public interface BoardRepository extends JpaRepository<Boards, Long> {
 
     @Query("SELECT b FROM Boards b WHERE b.boardId IN (SELECT bl.boardId FROM BoardLikes bl WHERE bl.userEmail = :userEmail)")
     List<Boards> findBoardsLikedByUser(String userEmail);
+
+    @Query("SELECT b FROM Boards b WHERE b.boardTitle LIKE %:keyword% AND b.boardId IN (SELECT bl.boardId FROM BoardLikes bl WHERE bl.userEmail = :userEmail)")
+    List<Boards> findBoardsLikedByUserWithTitle(String userEmail, String keyword);
+
+    @Query("SELECT b FROM Boards b WHERE b.boardTitle LIKE %:keyword%")
+    List<Boards> findBoardsWithTitle(String keyword);
 }
