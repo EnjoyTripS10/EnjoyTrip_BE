@@ -22,6 +22,7 @@ public class BoardLikeService {
 
     public void createBoardLike(Long boardId, String userEmail) {
         boolean isExist = getLikeCheck(boardId, userEmail);
+        System.out.println("createBoardLike"+isExist);
         if(!isExist)
             boardLikeRepository.save(com.study.sociallogin.model.BoardLikes.builder()
                     .boardId(boardId)
@@ -30,7 +31,9 @@ public class BoardLikeService {
     }
 
     public void removeBoardLike(Long boardId, String userEmail) {
+        System.out.println("removeBoardLike");
         boolean isExist = getLikeCheck(boardId, userEmail);
+        System.out.println(isExist);
         if(isExist)
             boardLikeRepository.deleteByBoardIdAndUserEmail(boardId, userEmail);
     }

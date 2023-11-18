@@ -1,7 +1,6 @@
 package com.study.sociallogin.service;
 
 import com.study.sociallogin.model.Boards;
-import com.study.sociallogin.repository.BoardLikeRepository;
 import com.study.sociallogin.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,5 +34,14 @@ public class BoardService {
 
     public void deleteBoard(Long boardId) {
         boardRepository.deleteById(boardId);
+    }
+
+    public List<Boards> getLikedBoardList(String userEmail) {
+
+        return null;
+    }
+
+    public List<Boards> findBoardsLikedByUser(String userEmail) {
+        return boardRepository.findBoardsLikedByUser(userEmail);
     }
 }

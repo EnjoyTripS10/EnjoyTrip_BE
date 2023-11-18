@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -39,4 +40,7 @@ public class Boards {
 
     @Column(length = 50)
     private Long locationId;
+
+    @OneToMany(mappedBy = "board")
+    private List<BoardLikes> likes;
 }

@@ -20,6 +20,10 @@ public class BoardLikes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long boardLikeId;
 
+    @ManyToOne
+    @JoinColumn(name = "boardId", insertable = false, updatable = false)
+    private Boards board;
+
     @Column
     private Long boardId;
 

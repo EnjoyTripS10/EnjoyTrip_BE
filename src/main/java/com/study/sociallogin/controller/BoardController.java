@@ -4,6 +4,7 @@ import com.study.sociallogin.dto.BoardDto;
 import com.study.sociallogin.dto.BoardResponse;
 import com.study.sociallogin.model.Boards;
 import com.study.sociallogin.model.Locations;
+import com.study.sociallogin.request.BoardLikeDto;
 import com.study.sociallogin.service.BoardLikeService;
 import com.study.sociallogin.service.BoardService;
 import com.study.sociallogin.service.LocationService;
@@ -221,14 +222,15 @@ public class BoardController {
     }
 
     //좋아요누르기 controller
-    @PostMapping("/like/{id}")
-    public ResponseEntity<HttpStatus> likeBoard(@PathVariable("id") Long boardId,@RequestParam("like") boolean isLike) {
+    @PostMapping("/like")
+    public ResponseEntity<HttpStatus> likeBoard(@RequestBody BoardLikeDto boardLikeDto) {
         System.out.println("like board");
         String userEmail = "1";
-        if(isLike)
-            boardLikeService.createBoardLike(boardId, userEmail);
+        System.out.println(boardLikeDto.getBoardId() + " " + boardLikeDto.getIsLiked());
+        if(boardLikeDto.getIsLiked())
+            boardLikeService.createBoardLike(boardLikeDto.getBoardId(), userEmail);
         else
-            boardLikeService.removeBoardLike(boardId, userEmail);
+            boardLikeService.removeBoardLike(boardLikeDto.getBoardId(), userEmail);
 
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
