@@ -1,6 +1,7 @@
 package com.study.sociallogin.repository;
 
 import com.study.sociallogin.model.Boards;
+import com.study.sociallogin.model.Locations;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -17,4 +18,6 @@ public interface BoardRepository extends JpaRepository<Boards, Long> {
 
     @Query("SELECT b FROM Boards b WHERE b.boardTitle LIKE %:keyword%")
     List<Boards> findBoardsWithTitle(String keyword);
+
+
 }

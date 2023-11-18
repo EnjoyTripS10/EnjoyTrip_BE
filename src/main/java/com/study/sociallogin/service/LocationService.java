@@ -5,9 +5,11 @@ import com.study.sociallogin.repository.LocationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,5 +32,9 @@ public class LocationService {
 
     public Locations getLocationId(Long locationId) {
         return locationRepository.findByLocationId(locationId);
+    }
+
+    public List<Locations> getStoredLocationList(String userEmail) {
+        return locationRepository.findLocationsLikedByUser(userEmail);
     }
 }

@@ -43,4 +43,5 @@ public class Boards {
 
     @OneToMany(mappedBy = "board")
     private List<BoardLikes> likes;
+    
 }
