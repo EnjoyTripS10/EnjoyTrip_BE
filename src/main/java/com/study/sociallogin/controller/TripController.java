@@ -2,14 +2,10 @@ package com.study.sociallogin.controller;
 
 import com.study.sociallogin.dto.TripDetailDto;
 import com.study.sociallogin.dto.TripMemberDto;
-import com.study.sociallogin.model.TripDetails;
-import com.study.sociallogin.model.TripMembers;
-import com.study.sociallogin.model.Trips;
-import com.study.sociallogin.model.Locations;
-import com.study.sociallogin.service.LocationService;
-import com.study.sociallogin.service.TripDetailService;
-import com.study.sociallogin.service.TripMemberService;
-import com.study.sociallogin.service.TripService;
+import com.study.sociallogin.dto.UserResponse;
+import com.study.sociallogin.model.*;
+import com.study.sociallogin.response.TripListResponse;
+import com.study.sociallogin.service.*;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -33,13 +29,14 @@ public class TripController {
     private final TripMemberService tripMemberService;
     private final LocationService locationService;
     private final TripDetailService tripDetailService;
+    private final UserService userService;
 
     @PostMapping
     public ResponseEntity<HttpStatus> registerTrip(@RequestBody TripRequest tripRequest) throws ParseException {
         System.out.println("create trip");
 
         //login check 해야함....
-        String userEmail = "1";
+        String userEmail = "love2491193@naver.com";
 
         //trip 정보 저장
         Trips trip = Trips.builder()
@@ -110,7 +107,7 @@ public class TripController {
     public ResponseEntity<TripRequest> getTrip(@PathVariable("id") Long id) throws java.text.ParseException {
         System.out.print("get trip plan /" + id + "//");
 
-        String userEmail = "1";
+        String userEmail = "love2491193@naver.com";
         Trips trip = tripService.getTrip(id);
         if(trip == null){
             return ResponseEntity.notFound().build();
@@ -165,6 +162,37 @@ public class TripController {
                         .build()
         );
 
+    }
+
+    @GetMapping
+    public ResponseEntity<List<TripListResponse>> getTripList() {
+        System.out.println("get trip list");
+        String userEmail = "love2491193@naver.com";
+        List<Trips> tripList = tripService.getTripList();
+        List<TripListResponse> tripListResponse = new ArrayList<>();
+        for (Trips trip : tripList) {
+            List<TripMembers> tripMembers = tripMemberService.getTripMembers(trip.getTripId());
+            List<UserResponse> users = new ArrayList<>();
+            for (TripMembers member : tripMembers) {
+                UserResponse user = userService.getUserEmail(member.getUserEmail());
+                users.add(UserResponse.builder()
+                        .userEmail(member.getUserEmail())
+                        .userName(user.getUserName())
+                        .picture(user.getPicture())
+                        .build());
+            }
+            tripListResponse.add(
+                    TripListResponse.builder()
+                            .tripId(trip.getTripId())
+                            .tripTitle(trip.getTripTitle())
+                            .tripType(trip.getTripType())
+                            .tripStartDate(trip.getTripStartDate())
+                            .tripEndDate(trip.getTripEndDate())
+                            .users(users)
+                            .build()
+            );
+        }
+        return ResponseEntity.ok(tripListResponse);
     }
 
 }

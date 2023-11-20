@@ -8,4 +8,5 @@ import lombok.Setter;
 public class TripMemberDto {
     String email;
     String name;
+    String picture;
 }
