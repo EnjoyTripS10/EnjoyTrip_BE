@@ -1,8 +1,10 @@
 package com.study.sociallogin.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class TripDetailDto {
 
     private Long locationId;
@@ -18,5 +20,4 @@ public class TripDetailDto {
     private String locationType;
 
     private String memo;
-
 }

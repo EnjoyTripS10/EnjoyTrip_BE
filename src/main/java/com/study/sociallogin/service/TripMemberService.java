@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -14,5 +16,9 @@ public class TripMemberService {
 
     public void createTripMember(TripMembers tripMember) {
         tripMemberRepository.save(tripMember);
+    }
+
+    public List<TripMembers> getTripMembers(Long id) {
+        return tripMemberRepository.findAllByTripId(id);
     }
 }
