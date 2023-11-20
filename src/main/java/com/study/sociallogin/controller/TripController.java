@@ -151,6 +151,18 @@ public class TripController {
             locationList.add(dtoList);
         }
 
+        List<TripMembers> users = tripMemberService.getTripMembers(id);
+        List<TripMemberDto> userList = new ArrayList<>();
+        for (TripMembers member : users) {
+            UserResponse user = userService.getUserEmail(member.getUserEmail());
+            userList.add(TripMemberDto.builder()
+                    .email(member.getUserEmail())
+                    .name(user.getUserName())
+                    .picture(user.getPicture())
+                    .build());
+        }
+
+
         return ResponseEntity.ok(
                 TripRequest.builder()
                         .title(trip.getTripTitle())
@@ -159,6 +171,7 @@ public class TripController {
                         .startDate(trip.getTripStartDate())
                         .endDate(trip.getTripEndDate())
                         .locationList(locationList)
+                        .users(userList)
                         .build()
         );
 
