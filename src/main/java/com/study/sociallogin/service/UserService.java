@@ -110,6 +110,7 @@ public class UserService {
                     UserResponse.builder()
                             .userEmail(user.getUserEmail())
                             .userName(user.getUserName())
+                            .picture(user.getPicture())
                             .build()
             );
         }

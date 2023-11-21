@@ -1,5 +1,6 @@
 package com.study.sociallogin.service;
 
+import com.study.sociallogin.dto.BoardLocationDto;
 import com.study.sociallogin.model.Boards;
 import com.study.sociallogin.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,5 +56,9 @@ public class BoardService {
 
     public Boards update(Boards board) {
         return boardRepository.save(board);
+    }
+
+    public List<BoardLocationDto> findSearchCityBoards(String keyword) {
+        return boardRepository.findBoardsWithLocationName(keyword);
     }
 }
