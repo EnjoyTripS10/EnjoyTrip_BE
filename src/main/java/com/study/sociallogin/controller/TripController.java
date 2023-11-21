@@ -63,12 +63,12 @@ public class TripController {
 
 
         for (TripMemberDto member : tripRequest.getUsers()) {
-              System.out.println(member.getEmail() + " " + member.getName());
-              if(member.getEmail().equals(userEmail))
+              System.out.println(member.getUserEmail() + " " + member.getUserName());
+              if(member.getUserEmail().equals(userEmail))
                   continue;
               tripMemberService.createTripMember(TripMembers.builder()
                       .tripId(trip.getTripId())
-                      .userEmail(member.getEmail())
+                      .userEmail(member.getUserEmail())
                       .owner(false)
                       .build());
         }
@@ -156,8 +156,8 @@ public class TripController {
         for (TripMembers member : users) {
             UserResponse user = userService.getUserEmail(member.getUserEmail());
             userList.add(TripMemberDto.builder()
-                    .email(member.getUserEmail())
-                    .name(user.getUserName())
+                    .userEmail(member.getUserEmail())
+                    .userName(user.getUserName())
                     .picture(user.getPicture())
                     .build());
         }

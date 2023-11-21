@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class TripMemberDto {
-    String email;
-    String name;
+    String userEmail;
+    String userName;
     String picture;
 }
