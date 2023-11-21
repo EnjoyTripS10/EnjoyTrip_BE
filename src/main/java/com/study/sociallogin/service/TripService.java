@@ -24,4 +24,8 @@ public class TripService {
     public List<Trips> getTripList() {
         return tripRepository.findAll();
     }
+
+    public void deleteTrip(Long id) {
+        tripRepository.deleteById(id);
+    }
 }

@@ -21,4 +21,12 @@ public class TripMemberService {
     public List<TripMembers> getTripMembers(Long id) {
         return tripMemberRepository.findAllByTripId(id);
     }
+
+    public void deleteTripMember(Long id) {
+        tripMemberRepository.deleteById(id);
+    }
+
+    public TripMembers getTripOwner(Long id) {
+        return tripMemberRepository.findByTripIdAndOwner(id, true);
+    }
 }

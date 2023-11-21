@@ -37,4 +37,8 @@ public class BoardLikeService {
         if(isExist)
             boardLikeRepository.deleteByBoardIdAndUserEmail(boardId, userEmail);
     }
+
+    public void deleteBoardLike(Long boardId) {
+        boardLikeRepository.deleteByBoardId(boardId);
+    }
 }

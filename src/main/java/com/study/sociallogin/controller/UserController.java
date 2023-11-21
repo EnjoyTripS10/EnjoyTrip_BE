@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -38,6 +39,15 @@ public class UserController {
     public ResponseEntity<UserResponse> getUserEmail(@PathVariable("email") String email) {
         System.out.print("get id/" + email + "//");
         UserResponse userResponse = userService.getUserEmail(email);
+
+        if(userResponse == null){
+            return ResponseEntity.ok(null);
+        }
+        return ResponseEntity.ok(userResponse);
+    }
+    @GetMapping("/findmembers")
+    public ResponseEntity<List<UserResponse>> getUserEmail() {
+        List<UserResponse> userResponse = userService.getUsers();
 
         if(userResponse == null){
             return ResponseEntity.ok(null);

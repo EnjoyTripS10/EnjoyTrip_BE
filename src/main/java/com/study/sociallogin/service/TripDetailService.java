@@ -22,4 +22,8 @@ public class TripDetailService {
     public List<TripDetails> getDetailList(Long tripId, int tripDate) {
             return tripDetailRepository.findByTripIdAndTripDateOrderByOrderIndexAsc(tripId, tripDate);
     }
+
+    public void deleteTripDetail(Long id) {
+            tripDetailRepository.deleteById(id);
+    }
 }

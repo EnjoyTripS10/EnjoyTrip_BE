@@ -52,4 +52,8 @@ public class BoardService {
     public List<Boards> findSearchBoards(String keyword) {
         return boardRepository.findBoardsWithTitle(keyword);
     }
+
+    public Boards update(Boards board) {
+        return boardRepository.save(board);
+    }
 }

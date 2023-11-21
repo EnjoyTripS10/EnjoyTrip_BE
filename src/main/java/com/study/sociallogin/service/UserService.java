@@ -8,8 +8,8 @@ import com.study.sociallogin.type.UserType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -100,5 +100,19 @@ public class UserService {
                 .userName(user.getUserName())
                 .picture(user.getPicture())
                 .build();
+    }
+
+    public List<UserResponse> getUsers() {
+        List<User> userList =  userRepository.findAll();
+        List<UserResponse> userResponseList = new ArrayList<>();
+        for (User user : userList) {
+            userResponseList.add(
+                    UserResponse.builder()
+                            .userEmail(user.getUserEmail())
+                            .userName(user.getUserName())
+                            .build()
+            );
+        }
+        return userResponseList;
     }
 }

@@ -208,4 +208,19 @@ public class TripController {
         return ResponseEntity.ok(tripListResponse);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deleteTrip(@PathVariable("id") Long id) {
+        System.out.println("delete trip");
+        String userEmail = "love2491193@naver.com";
+        String owner = tripMemberService.getTripOwner(id).getUserEmail();
+        //본인 여부 체크
+        if(owner == null || userEmail.equals(owner)){
+            tripMemberService.deleteTripMember(id);
+            tripDetailService.deleteTripDetail(id);
+            tripService.deleteTrip(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
 }
