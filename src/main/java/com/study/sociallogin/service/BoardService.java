@@ -59,6 +59,6 @@ public class BoardService {
     }
 
     public List<BoardLocationDto> findSearchCityBoards(String keyword) {
-        return boardRepository.findBoardsWithLocationName(keyword);
+        return boardRepository.findBoardsWithLocationCity(keyword);
     }
 }

@@ -13,6 +13,7 @@ public class BoardResponse {
     private String boardContent;
     private String createdAt;
     private int boardHit;
+    private int likeCnt;
     private String userEmail;
     private Long locationId;
     private byte[] image;

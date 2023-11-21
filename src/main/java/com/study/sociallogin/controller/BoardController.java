@@ -136,12 +136,14 @@ public class BoardController {
         List<Boards> boards = boardService.getBoardList();
         List<BoardResponse> responses = new ArrayList<>();
         for (Boards board: boards) {
+            int likeCnt = boardLikeService.getBoardLikes(board.getBoardId());
             BoardResponse boardRespose = BoardResponse.builder()
                     .boardId(board.getBoardId())
                     .boardTitle(board.getBoardTitle())
                     .boardContent(board.getBoardContent())
                     .createdAt(board.getCreatedAt().toString())
                     .boardHit(board.getBoardHit())
+                    .likeCnt(likeCnt)
                     .userEmail(board.getUserEmail())
                     .locationId(board.getLocationId())
                     .build();
@@ -244,12 +246,14 @@ public class BoardController {
         List<Boards> boards = boardService.findSearchBoards(keyword);
         List<BoardResponse> responses = new ArrayList<>();
         for (Boards board: boards) {
+            int likeCnt = boardLikeService.getBoardLikes(board.getBoardId());
             BoardResponse boardRespose = BoardResponse.builder()
                     .boardId(board.getBoardId())
                     .boardTitle(board.getBoardTitle())
                     .boardContent(board.getBoardContent())
                     .createdAt(board.getCreatedAt().toString())
                     .boardHit(board.getBoardHit())
+                    .likeCnt(likeCnt)
                     .userEmail(board.getUserEmail())
                     .locationId(board.getLocationId())
                     .build();
@@ -277,17 +281,20 @@ public class BoardController {
     @GetMapping("/searchCity/{keyword}")
     public ResponseEntity<List<BoardResponse>> getLikeSearchCityList(@PathVariable("keyword") String keyword) {
         System.out.println("get search City board list");
+        System.out.println(keyword);
         String userEmail = "1";
 
-        List<BoardLocationDto> boards = boardService.findSearchCityBoards("%"+keyword+"%");
+        List<BoardLocationDto> boards = boardService.findSearchCityBoards(keyword+"%");
         List<BoardResponse> responses = new ArrayList<>();
         for (BoardLocationDto board: boards) {
+            int likeCnt = boardLikeService.getBoardLikes(board.getBoardId());
             BoardResponse boardRespose = BoardResponse.builder()
                     .boardId(board.getBoardId())
                     .boardTitle(board.getBoardTitle())
                     .boardContent(board.getBoardContent())
                     .createdAt(board.getCreatedAt().toString())
                     .boardHit(board.getBoardHit())
+                    .likeCnt(likeCnt)
                     .userEmail(board.getUserEmail())
                     .locationId(board.getLocationId())
                     .build();

@@ -22,9 +22,9 @@ public interface BoardRepository extends JpaRepository<Boards, Long> {
     List<Boards> findBoardsWithTitle(String keyword);
 
     @Query("SELECT new com.study.sociallogin.dto.BoardLocationDto(b.boardId, b.boardTitle, b.boardContent, b.locationId,b.createdAt,b.boardHit, b.userEmail) " +
-            "FROM Boards b JOIN Locations l " +
-            "WHERE l.locationName LIKE :locationName")
-    List<BoardLocationDto> findBoardsWithLocationName(@Param("locationName") String locationName);
+            "FROM Boards b LEFT JOIN Locations l ON b.locationId = l.locationId " +
+            "WHERE l.locationAddr LIKE :locationName")
+    List<BoardLocationDto> findBoardsWithLocationCity(@Param("locationName") String locationName);
 
 
 }
