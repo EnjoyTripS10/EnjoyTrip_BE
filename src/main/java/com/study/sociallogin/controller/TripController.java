@@ -105,7 +105,7 @@ public class TripController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TripRequest> getTrip(@PathVariable("id") Long id) throws java.text.ParseException {
-        System.out.print("get trip plan /" + id + "//");
+        System.out.print("get trip plan /" + id + "///");
 
         String userEmail = "love2491193@naver.com";
         Trips trip = tripService.getTrip(id);
