@@ -4,6 +4,7 @@ import com.study.sociallogin.dto.TripDetailDto;
 import com.study.sociallogin.dto.TripMemberDto;
 import com.study.sociallogin.dto.UserResponse;
 import com.study.sociallogin.model.*;
+import com.study.sociallogin.request.TripUpdateRequest;
 import com.study.sociallogin.response.TripListResponse;
 import com.study.sociallogin.service.*;
 import lombok.RequiredArgsConstructor;
@@ -54,32 +55,31 @@ public class TripController {
 //        users.add(userEmail);
         tripMemberService.createTripMember(
                 TripMembers.builder()
-                .tripId(trip.getTripId())
-                .userEmail(userEmail)
-                .owner(true)
-                .build()
+                        .tripId(trip.getTripId())
+                        .userEmail(userEmail)
+                        .owner(true)
+                        .build()
         );
 
 
-
         for (TripMemberDto member : tripRequest.getUsers()) {
-              System.out.println(member.getUserEmail() + " " + member.getUserName());
-              if(member.getUserEmail().equals(userEmail))
-                  continue;
-              tripMemberService.createTripMember(TripMembers.builder()
-                      .tripId(trip.getTripId())
-                      .userEmail(member.getUserEmail())
-                      .owner(false)
-                      .build());
+            System.out.println(member.getUserEmail() + " " + member.getUserName());
+            if (member.getUserEmail().equals(userEmail))
+                continue;
+            tripMemberService.createTripMember(TripMembers.builder()
+                    .tripId(trip.getTripId())
+                    .userEmail(member.getUserEmail())
+                    .owner(false)
+                    .build());
         }
 
         //trip detail 정보 파싱
         JSONParser jsonParser = new JSONParser();
         System.out.println(tripRequest.getLocationList().size());
         int tripIndex = 0;
-        for(List<TripDetailDto> li : tripRequest.getLocationList()){
+        for (List<TripDetailDto> li : tripRequest.getLocationList()) {
             int locationIndex = 0;
-            for(TripDetailDto location : li){
+            for (TripDetailDto location : li) {
                 //장소 체크
                 Locations loc = locationService.createLocation(Locations.builder()
                         .locationName(location.getLocationName())
@@ -109,18 +109,15 @@ public class TripController {
 
         String userEmail = "love2491193@naver.com";
         Trips trip = tripService.getTrip(id);
-        if(trip == null){
+        if (trip == null) {
             return ResponseEntity.notFound().build();
         }
         List<TripMembers> tripMembers = tripMemberService.getTripMembers(id);
 
         List<List<TripDetailDto>> locationList = new ArrayList<>();
 
-        String dateStr = "2023-11-01T15:00:00.000Z";
-
-
-        String start = trip.getTripStartDate().substring(0,10);
-        String end = trip.getTripEndDate().substring(0,10);
+        String start = trip.getTripStartDate().substring(0, 10);
+        String end = trip.getTripEndDate().substring(0, 10);
 
         // 포맷터
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -130,8 +127,8 @@ public class TripController {
         Date edate = format.parse(end);
 
         long Sec = (edate.getTime() - sdate.getTime()) / 1000; // 초
-        long Days = Sec / (24*60*60); // 일자수
-        System.out.println("::::::"+Days);
+        long Days = Sec / (24 * 60 * 60); // 일자수
+        System.out.println("::::::" + Days);
 
         for (int i = 0; i <= Days; i++) {
             List<TripDetails> detailList = tripDetailService.getDetailList(id, i);
@@ -214,7 +211,7 @@ public class TripController {
         String userEmail = "love2491193@naver.com";
         String owner = tripMemberService.getTripOwner(id).getUserEmail();
         //본인 여부 체크
-        if(owner == null || userEmail.equals(owner)){
+        if (owner == null || userEmail.equals(owner)) {
             tripMemberService.deleteTripMember(id);
             tripDetailService.deleteTripDetail(id);
             tripService.deleteTrip(id);
@@ -223,4 +220,68 @@ public class TripController {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
+    @PostMapping("transReview/{id}")
+    public ResponseEntity<HttpStatus> transReview(@PathVariable("id") Long id) {
+        System.out.println("transReview");
+        String userEmail = "love2491193@naver.com";
+        String owner = tripMemberService.getTripOwner(id).getUserEmail();
+        //본인 여부 체크
+        if (owner == null || userEmail.equals(owner)) {
+            tripService.transReview(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<HttpStatus> updateTrip(@PathVariable("id") Long tripId, @RequestBody TripUpdateRequest tripRequest) throws ParseException {
+        System.out.println("update trip");
+
+        //login check 해야함....
+        String userEmail = "love2491193@naver.com";
+
+        //trip 정보 저장
+        Trips trip = Trips.builder()
+                .tripId(tripId)
+                .tripTitle(tripRequest.getTitle())
+                .tripContent(tripRequest.getContent())
+                .tripType(tripRequest.getType())
+                .tripStartDate(tripRequest.getStartDate())
+                .tripEndDate(tripRequest.getEndDate())
+                .build();
+
+        trip = tripService.createTrip(trip);
+
+         //trip detail 삭제
+        tripDetailService.deleteTripDetail(tripId);
+
+        //trip detail 정보 파싱
+        JSONParser jsonParser = new JSONParser();
+        System.out.println(tripRequest.getLocationList().size());
+        int tripIndex = 0;
+        for (List<TripDetailDto> li : tripRequest.getLocationList()) {
+            int locationIndex = 0;
+            for (TripDetailDto location : li) {
+                //장소 체크
+                Locations loc = locationService.createLocation(Locations.builder()
+                        .locationName(location.getLocationName())
+                        .locationAddr(location.getLocationAddr())
+                        .locationLat(location.getLocationLat())
+                        .locationLon(location.getLocationLon())
+                        .build());
+
+                tripDetailService.createLocation(TripDetails.builder()
+                        .tripId(trip.getTripId())
+                        .locationId(loc.getLocationId())
+                        .orderIndex(locationIndex++)
+                        .reviewType(0)
+                        .tripDate(tripIndex)
+                        .memo(location.getMemo())
+                        .build());
+            }
+            tripIndex++;
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

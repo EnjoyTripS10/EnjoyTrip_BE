@@ -28,4 +28,10 @@ public class TripService {
     public void deleteTrip(Long id) {
         tripRepository.deleteById(id);
     }
+
+    public void transReview(Long id) {
+        Trips trip = tripRepository.findByTripId(id);
+        trip.setTripType(1);
+        tripRepository.save(trip);
+    }
 }

@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface TripDetailRepository extends JpaRepository<TripDetails, Long> {
     List<TripDetails> findByTripIdAndTripDateOrderByOrderIndexAsc(Long tripId, int tripDate);
+
+    void deleteByTripId(Long id);
 }

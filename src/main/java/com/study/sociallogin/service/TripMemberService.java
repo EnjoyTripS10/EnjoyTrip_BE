@@ -23,7 +23,7 @@ public class TripMemberService {
     }
 
     public void deleteTripMember(Long id) {
-        tripMemberRepository.deleteById(id);
+        tripMemberRepository.deleteByTripId(id);
     }
 
     public TripMembers getTripOwner(Long id) {

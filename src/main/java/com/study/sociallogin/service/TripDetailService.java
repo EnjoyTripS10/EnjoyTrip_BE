@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -23,7 +24,8 @@ public class TripDetailService {
             return tripDetailRepository.findByTripIdAndTripDateOrderByOrderIndexAsc(tripId, tripDate);
     }
 
+    @Transactional
     public void deleteTripDetail(Long id) {
-            tripDetailRepository.deleteById(id);
+            tripDetailRepository.deleteByTripId(id);
     }
 }
