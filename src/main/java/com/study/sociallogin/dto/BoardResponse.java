@@ -17,6 +17,7 @@ public class BoardResponse {
     private String userEmail;
     private Long locationId;
     private boolean mine;
+    private String locationType;
     private byte[] image;
 
 

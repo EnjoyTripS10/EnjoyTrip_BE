@@ -149,8 +149,12 @@ public class BoardController {
         List<BoardResponse> responses = new ArrayList<>();
         for (Boards board: boards) {
             int likeCnt = boardLikeService.getBoardLikes(board.getBoardId());
+
             boolean mine = false;
             if(userEmail.equals(board.getUserEmail())) mine = true;
+
+            Locations loc = locationService.getLocationId(board.getLocationId());
+
             BoardResponse boardRespose = BoardResponse.builder()
                     .boardId(board.getBoardId())
                     .boardTitle(board.getBoardTitle())
@@ -159,6 +163,7 @@ public class BoardController {
                     .boardHit(board.getBoardHit())
                     .likeCnt(likeCnt)
                     .userEmail(board.getUserEmail())
+                    .locationType(loc.getLocationType())
                     .locationId(board.getLocationId())
                     .mine(mine)
                     .build();
