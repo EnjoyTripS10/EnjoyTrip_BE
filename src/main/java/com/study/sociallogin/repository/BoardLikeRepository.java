@@ -13,5 +13,6 @@ public interface BoardLikeRepository extends JpaRepository<BoardLikes, Long> {
     @Transactional
     void deleteByBoardIdAndUserEmail(Long boardId, String userEmail);
 
+    @Transactional
     void deleteByBoardId(Long boardId);
 }

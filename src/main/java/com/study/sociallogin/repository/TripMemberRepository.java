@@ -3,6 +3,7 @@ package com.study.sociallogin.repository;
 import com.study.sociallogin.model.TripMembers;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 public interface TripMemberRepository extends JpaRepository<TripMembers, Long> {
@@ -10,5 +11,6 @@ public interface TripMemberRepository extends JpaRepository<TripMembers, Long> {
 
     TripMembers findByTripIdAndOwner(Long id, boolean b);
 
+    @Transactional
     void deleteByTripId(Long id);
 }
