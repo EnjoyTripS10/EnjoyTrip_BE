@@ -88,11 +88,12 @@ public class KakaoLoginServiceImpl implements SocialLoginService {
         String name = Optional.ofNullable(kakaoLoginData.getProfile())
                 .orElse(KaKaoLoginResponse.KakaoLoginData.KakaoProfile.builder().build())
                 .getNickname();
-
+        System.out.println(kakaoLoginData.toString());
+        System.out.println(kakaoLoginData.getProperties().getProfile_image());
         return SocialUserResponse.builder()
                 .id(kaKaoLoginResponse.getId())
                 .gender(kakaoLoginData.getGender())
-//                .imageUrl(kakaoLoginData.getProfile().getProfile_image())
+                .picture(kakaoLoginData.getProfile().getProfile_image_url())
                 .name(name)
                 .email(kakaoLoginData.getEmail())
                 .build();

@@ -31,7 +31,7 @@ public class KaKaoLoginResponse {
         @AllArgsConstructor
         public static class KakaoProfile {
             private String nickname;
-            private String profile_image;
+            private String profile_image_url;
         }
 
         @Builder
@@ -40,6 +40,7 @@ public class KaKaoLoginResponse {
         @AllArgsConstructor
         public static class KakaoPropery {
             private String nickname;
+            private String profile_image;
         }
     }
 }
