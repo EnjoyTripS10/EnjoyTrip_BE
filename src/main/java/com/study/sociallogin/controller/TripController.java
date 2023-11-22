@@ -33,11 +33,16 @@ public class TripController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<HttpStatus> registerTrip(@RequestBody TripRequest tripRequest) throws ParseException {
+    public ResponseEntity<HttpStatus> registerTrip(
+            @RequestHeader("Authorization") String token,
+            @RequestBody TripRequest tripRequest) throws ParseException {
         System.out.println("create trip");
 
-        //login check 해야함....
-        String userEmail = "love2491193@naver.com";
+        //login check
+        String userEmail = userService.getUserEmailFromToken(token);
+        if(userEmail == null){
+            return ResponseEntity.ok(HttpStatus.UNAUTHORIZED);
+        }
 
         //trip 정보 저장
         Trips trip = Trips.builder()
@@ -104,15 +109,21 @@ public class TripController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TripRequest> getTrip(@PathVariable("id") Long id) throws java.text.ParseException {
+    public ResponseEntity<TripRequest> getTrip(@RequestHeader("Authorization") String token,
+                                               @PathVariable("id") Long id) throws java.text.ParseException {
         System.out.print("get trip plan /" + id + "///");
 
-        String userEmail = "love2491193@naver.com";
+        //login check
+        String userEmail = userService.getUserEmailFromToken(token);
+        if(userEmail == null){
+            return null;
+        }
+
         Trips trip = tripService.getTrip(id);
         if (trip == null) {
             return ResponseEntity.notFound().build();
         }
-        List<TripMembers> tripMembers = tripMemberService.getTripMembers(id);
+//        List<TripMembers> tripMembers = tripMemberService.getTripMembers(id);
 
         List<List<TripDetailDto>> locationList = new ArrayList<>();
 
@@ -150,7 +161,9 @@ public class TripController {
 
         List<TripMembers> users = tripMemberService.getTripMembers(id);
         List<TripMemberDto> userList = new ArrayList<>();
+        boolean mine = false;
         for (TripMembers member : users) {
+            if(userEmail.equals(member.getUserEmail())) mine = true;
             UserResponse user = userService.getUserEmail(member.getUserEmail());
             userList.add(TripMemberDto.builder()
                     .userEmail(member.getUserEmail())
@@ -158,6 +171,7 @@ public class TripController {
                     .picture(user.getPicture())
                     .build());
         }
+
 
 
         return ResponseEntity.ok(
@@ -169,15 +183,20 @@ public class TripController {
                         .endDate(trip.getTripEndDate())
                         .locationList(locationList)
                         .users(userList)
+                        .mine(mine)
                         .build()
         );
 
     }
 
     @GetMapping
-    public ResponseEntity<List<TripListResponse>> getTripList() {
+    public ResponseEntity<List<TripListResponse>> getTripList(@RequestHeader("Authorization") String token) {
         System.out.println("get trip list");
-        String userEmail = "love2491193@naver.com";
+        //login check
+        String userEmail = userService.getUserEmailFromToken(token);
+        if(userEmail == null){
+            return null;
+        }
         List<Trips> tripList = tripService.getTripList();
         List<TripListResponse> tripListResponse = new ArrayList<>();
         for (Trips trip : tripList) {
@@ -206,9 +225,15 @@ public class TripController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteTrip(@PathVariable("id") Long id) {
+    public ResponseEntity<HttpStatus> deleteTrip(@RequestHeader("Authorization") String token,
+                                                 @PathVariable("id") Long id) {
         System.out.println("delete trip");
-        String userEmail = "love2491193@naver.com";
+        //login check
+        String userEmail = userService.getUserEmailFromToken(token);
+        if(userEmail == null){
+            return ResponseEntity.ok(HttpStatus.UNAUTHORIZED);
+        }
+
         String owner = tripMemberService.getTripOwner(id).getUserEmail();
         //본인 여부 체크
         if (owner == null || userEmail.equals(owner)) {
@@ -221,9 +246,15 @@ public class TripController {
     }
 
     @PostMapping("transReview/{id}")
-    public ResponseEntity<HttpStatus> transReview(@PathVariable("id") Long id) {
+    public ResponseEntity<HttpStatus> transReview(@RequestHeader("Authorization") String token,
+                                                  @PathVariable("id") Long id) {
         System.out.println("transReview");
-        String userEmail = "love2491193@naver.com";
+        //login check
+        String userEmail = userService.getUserEmailFromToken(token);
+        if(userEmail == null){
+            return ResponseEntity.ok(HttpStatus.UNAUTHORIZED);
+        }
+
         String owner = tripMemberService.getTripOwner(id).getUserEmail();
         //본인 여부 체크
         if (owner == null || userEmail.equals(owner)) {
@@ -234,11 +265,15 @@ public class TripController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<HttpStatus> updateTrip(@PathVariable("id") Long tripId, @RequestBody TripUpdateRequest tripRequest) throws ParseException {
+    public ResponseEntity<HttpStatus> updateTrip(@RequestHeader("Authorization") String token,
+                                                 @PathVariable("id") Long tripId, @RequestBody TripUpdateRequest tripRequest) throws ParseException {
         System.out.println("update trip");
 
-        //login check 해야함....
-        String userEmail = "love2491193@naver.com";
+        //login check
+        String userEmail = userService.getUserEmailFromToken(token);
+        if(userEmail == null){
+            return ResponseEntity.ok(HttpStatus.UNAUTHORIZED);
+        }
 
         //trip 정보 저장
         Trips trip = Trips.builder()

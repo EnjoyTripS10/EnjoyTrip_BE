@@ -18,4 +18,5 @@ public class TripRequest {
     private List<TripMemberDto> users;
     private String tripDetails;
     private List<List<TripDetailDto>> locationList;
+    private boolean mine;
 }

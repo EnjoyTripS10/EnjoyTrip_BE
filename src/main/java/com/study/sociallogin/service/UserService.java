@@ -34,6 +34,7 @@ public class UserService {
                             .userName(socialUserResponse.getName())
                             .userType(request.getUserType())
                             .picture(socialUserResponse.getPicture())
+                            .token(socialAuthResponse.getAccess_token())
                             .build()
             );
         }
@@ -57,6 +58,7 @@ public class UserService {
                         .userEmail(userJoinRequest.getUserEmail())
                         .userName(userJoinRequest.getUserName())
                         .picture(userJoinRequest.getPicture())
+                        .token(userJoinRequest.getToken())
                         .build()
         );
 
@@ -115,5 +117,14 @@ public class UserService {
             );
         }
         return userResponseList;
+    }
+
+    public String getUserEmailFromToken(String token) {
+        token = token.substring(7);
+        User user = userRepository.findByToken(token);
+        if (user == null) {
+            return null;
+        }
+        return user.getUserEmail();
     }
 }

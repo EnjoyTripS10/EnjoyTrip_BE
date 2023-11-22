@@ -40,4 +40,7 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
+    @Column(length = 1500)
+    private String token;
+
 }

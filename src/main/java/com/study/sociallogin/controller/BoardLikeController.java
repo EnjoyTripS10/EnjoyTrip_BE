@@ -5,8 +5,10 @@ import com.study.sociallogin.model.Boards;
 import com.study.sociallogin.service.BoardLikeService;
 import com.study.sociallogin.service.BoardService;
 import com.study.sociallogin.service.LocationService;
+import com.study.sociallogin.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,11 +30,16 @@ public class BoardLikeController {
     private final BoardService boardService;
     private final LocationService locationService;
     private final BoardLikeService boardLikeService;
+    private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<BoardResponse>> getLikeBoardList() {
+    public ResponseEntity<List<BoardResponse>> getLikeBoardList(@RequestHeader("Authorization") String token) {
         System.out.println("get liked board list");
-        String userEmail = "1";
+        //login check
+        String userEmail = userService.getUserEmailFromToken(token);
+        if(userEmail == null){
+            return null;
+        }
 
         List<Boards> boards = boardService.findBoardsLikedByUser(userEmail);
         List<BoardResponse> responses = new ArrayList<>();

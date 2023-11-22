@@ -26,5 +26,6 @@ public class BoardDto {
     private String locationType;
     private int boardLikes;
     private boolean isLike;
+    private boolean mine;
 
 }

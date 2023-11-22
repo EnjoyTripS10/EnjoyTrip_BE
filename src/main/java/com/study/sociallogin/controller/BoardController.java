@@ -9,6 +9,7 @@ import com.study.sociallogin.request.BoardLikeDto;
 import com.study.sociallogin.service.BoardLikeService;
 import com.study.sociallogin.service.BoardService;
 import com.study.sociallogin.service.LocationService;
+import com.study.sociallogin.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -40,21 +41,25 @@ public class BoardController {
 
     @Value("${imageFile.uploadPath}")
     private String filePath;
-
+    private final UserService userService;
     private final BoardService boardService;
     private final LocationService locationService;
     private final BoardLikeService boardLikeService;
 
 
     @PostMapping
-    public ResponseEntity<HttpStatus> registerBoard(@RequestParam("title") String title,
+    public ResponseEntity<HttpStatus> registerBoard(@RequestHeader("Authorization") String token,
+                                                    @RequestParam("title") String title,
                                                     @RequestParam("content") String content,
                                                     @RequestParam("inLocation") String inLocation,
                                                     @RequestParam("files") List<MultipartFile> files) throws ParseException, IOException {
         System.out.println("create");
 
-        //login check 해야함....
-        String userEmail = "1";
+        //login check
+        String userEmail = userService.getUserEmailFromToken(token);
+        if(userEmail == null){
+            return ResponseEntity.ok(HttpStatus.UNAUTHORIZED);
+        }
 
         //location 정보 파싱
         JSONParser jsonParser = new JSONParser();
@@ -130,13 +135,22 @@ public class BoardController {
 
     }
     @GetMapping
-    public ResponseEntity<List<BoardResponse>> getBoardList() {
+    public ResponseEntity<List<BoardResponse>> getBoardList(@RequestHeader("Authorization") String token) {
         System.out.println("get board list");
+
+        //login check
+        String userEmail = userService.getUserEmailFromToken(token);
+        if(userEmail == null){
+            System.out.println("권한 없음");
+            return null;
+        }
 
         List<Boards> boards = boardService.getBoardList();
         List<BoardResponse> responses = new ArrayList<>();
         for (Boards board: boards) {
             int likeCnt = boardLikeService.getBoardLikes(board.getBoardId());
+            boolean mine = false;
+            if(userEmail.equals(board.getUserEmail())) mine = true;
             BoardResponse boardRespose = BoardResponse.builder()
                     .boardId(board.getBoardId())
                     .boardTitle(board.getBoardTitle())
@@ -146,6 +160,7 @@ public class BoardController {
                     .likeCnt(likeCnt)
                     .userEmail(board.getUserEmail())
                     .locationId(board.getLocationId())
+                    .mine(mine)
                     .build();
             try {
                 String folderPath = filePath +"/" + board.getUserEmail() + "/" + board.getBoardId();
@@ -173,10 +188,20 @@ public class BoardController {
         return ResponseEntity.ok(responses);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<BoardDto> getBoard(@PathVariable("id") Long id) {
+    public ResponseEntity<BoardDto> getBoard(@RequestHeader("Authorization") String token,
+                                             @PathVariable("id") Long id) {
         System.out.println("get board one");
-        String userEmail = "1";
+        //login check
+        String userEmail = userService.getUserEmailFromToken(token);
+        if(userEmail == null){
+            return null;
+        }
+
         Boards board = boardService.getBoardId(id);
+
+        boolean mine = false;
+        if(userEmail.equals(board.getUserEmail())) mine = true;
+
         BoardDto boardDto = BoardDto.builder()
                     .boardId(board.getBoardId())
                     .boardTitle(board.getBoardTitle())
@@ -185,6 +210,7 @@ public class BoardController {
                     .boardHit(board.getBoardHit()+1)
                     .userEmail(board.getUserEmail())
                     .locationId(board.getLocationId())
+                    .mine(mine)
                     .build();
         try {
             String folderPath = filePath + "/" + board.getUserEmail() + "/" + board.getBoardId();
@@ -226,9 +252,15 @@ public class BoardController {
 
     //좋아요누르기 controller
     @PostMapping("/like")
-    public ResponseEntity<HttpStatus> likeBoard(@RequestBody BoardLikeDto boardLikeDto) {
+    public ResponseEntity<HttpStatus> likeBoard(@RequestHeader("Authorization") String token,
+                                                @RequestBody BoardLikeDto boardLikeDto) {
         System.out.println("like board");
-        String userEmail = "1";
+        //login check
+        String userEmail = userService.getUserEmailFromToken(token);
+        if(userEmail == null){
+            return ResponseEntity.ok(HttpStatus.UNAUTHORIZED);
+        }
+
         System.out.println(boardLikeDto.getBoardId() + " " + boardLikeDto.getIsLiked());
         if(boardLikeDto.getIsLiked())
             boardLikeService.createBoardLike(boardLikeDto.getBoardId(), userEmail);
@@ -239,9 +271,14 @@ public class BoardController {
     }
 
     @GetMapping("/search/{keyword}")
-    public ResponseEntity<List<BoardResponse>> getLikeSearchList(@PathVariable("keyword") String keyword) {
+    public ResponseEntity<List<BoardResponse>> getLikeSearchList(@RequestHeader("Authorization") String token,
+                                                                 @PathVariable("keyword") String keyword) {
         System.out.println("get board list");
-        String userEmail = "1";
+        //login check
+        String userEmail = userService.getUserEmailFromToken(token);
+        if(userEmail == null){
+            return null;
+        }
 
         List<Boards> boards = boardService.findSearchBoards(keyword);
         List<BoardResponse> responses = new ArrayList<>();
@@ -279,10 +316,13 @@ public class BoardController {
     }
 
     @GetMapping("/searchCity/{keyword}")
-    public ResponseEntity<List<BoardResponse>> getLikeSearchCityList(@PathVariable("keyword") String keyword) {
+    public ResponseEntity<List<BoardResponse>> getLikeSearchCityList(@RequestHeader("Authorization") String token,
+                                                                     @PathVariable("keyword") String keyword) {
         System.out.println("get search City board list");
         System.out.println(keyword);
-        String userEmail = "1";
+        //login check
+        String userEmail = userService.getUserEmailFromToken(token);
+        if(userEmail == null)  return null;
 
         List<BoardLocationDto> boards = boardService.findSearchCityBoards(keyword+"%");
         List<BoardResponse> responses = new ArrayList<>();
@@ -320,9 +360,14 @@ public class BoardController {
     }
 
     @DeleteMapping({"/{id}"})
-    public ResponseEntity<HttpStatus> deleteBoard(@PathVariable("id") Long boardId){
+    public ResponseEntity<HttpStatus> deleteBoard(@RequestHeader("Authorization") String token,
+                                                  @PathVariable("id") Long boardId){
         System.out.println("delete board");
-        String userEmail = "1";
+        //login check
+        String userEmail = userService.getUserEmailFromToken(token);
+        if(userEmail == null){
+            return ResponseEntity.ok(HttpStatus.UNAUTHORIZED);
+        }
         if(boardService.getBoardId(boardId).getUserEmail().equals(userEmail)){
             boardLikeService.deleteBoardLike(boardId);
             //댓글 삭제
@@ -334,15 +379,19 @@ public class BoardController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<HttpStatus> updateBoard(@RequestParam("boardId") Long boardId,
+    public ResponseEntity<HttpStatus> updateBoard(@RequestHeader("Authorization") String token,
+                                                  @RequestParam("boardId") Long boardId,
                                                     @RequestParam("title") String title,
                                                     @RequestParam("content") String content,
                                                     @RequestParam("inLocation") String inLocation,
                                                     @RequestParam("files") List<MultipartFile> files) throws ParseException, IOException {
         System.out.println("update");
 
-        //login check 해야함....
-        String userEmail = "1";
+        //login check
+        String userEmail = userService.getUserEmailFromToken(token);
+        if(userEmail == null){
+            return ResponseEntity.ok(HttpStatus.UNAUTHORIZED);
+        }
 
         //location 정보 파싱
         JSONParser jsonParser = new JSONParser();
