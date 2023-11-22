@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,10 +40,14 @@ public class UserService {
             );
         }
 
+
         User user = userRepository.findByUserId(socialUserResponse.getId())
                 .orElseThrow(() -> new NotFoundException("ERROR_001", "유저 정보를 찾을 수 없습니다."));
 
         System.out.println("user info" + user.toString());
+
+        user.setToken(socialAuthResponse.getAccess_token());
+        userRepository.save(user);
 
         return LoginResponse.builder()
                 .id(user.getId())

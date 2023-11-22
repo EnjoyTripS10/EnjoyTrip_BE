@@ -43,4 +43,7 @@ public class User extends BaseEntity {
     @Column(length = 1500)
     private String token;
 
+    public void setToken(String accessToken) {
+        token = accessToken;
+    }
 }
