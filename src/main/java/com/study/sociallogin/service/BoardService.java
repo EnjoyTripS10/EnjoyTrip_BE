@@ -37,10 +37,10 @@ public class BoardService {
         boardRepository.deleteById(boardId);
     }
 
-    public List<Boards> getLikedBoardList(String userEmail) {
-
-        return null;
-    }
+//    public List<Boards> getLikedBoardList(String userEmail) {
+//
+//        return null;
+//    }
 
     public List<Boards> findBoardsLikedByUser(String userEmail) {
         return boardRepository.findBoardsLikedByUser(userEmail);
