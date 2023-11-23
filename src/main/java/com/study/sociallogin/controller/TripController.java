@@ -1,5 +1,6 @@
 package com.study.sociallogin.controller;
 
+import com.study.sociallogin.config.NotificationService;
 import com.study.sociallogin.dto.TripDetailDto;
 import com.study.sociallogin.dto.TripMemberDto;
 import com.study.sociallogin.dto.UserResponse;
@@ -31,11 +32,12 @@ public class TripController {
     private final LocationService locationService;
     private final TripDetailService tripDetailService;
     private final UserService userService;
+    private final NotificationService notificationService;
 
     @PostMapping
     public ResponseEntity<HttpStatus> registerTrip(
             @RequestHeader("Authorization") String token,
-            @RequestBody TripRequest tripRequest) throws ParseException {
+            @RequestBody TripRequest tripRequest) throws Exception {
         System.out.println("create trip");
 
         //login check
@@ -76,6 +78,8 @@ public class TripController {
                     .userEmail(member.getUserEmail())
                     .owner(false)
                     .build());
+            String message = userEmail+"님이 회원님을 ["+tripRequest.getTitle() + "] 여행에 초대 했습니다.";
+            notificationService.notifyUser(member.getUserEmail(), message);
         }
 
         //trip detail 정보 파싱
@@ -226,7 +230,7 @@ public class TripController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteTrip(@RequestHeader("Authorization") String token,
-                                                 @PathVariable("id") Long id) {
+                                                 @PathVariable("id") Long id) throws Exception {
         System.out.println("delete trip");
         //login check
         String userEmail = userService.getUserEmailFromToken(token);
@@ -237,9 +241,20 @@ public class TripController {
         String owner = tripMemberService.getTripOwner(id).getUserEmail();
         //본인 여부 체크
         if (owner == null || userEmail.equals(owner)) {
+            List<TripMembers> members = tripMemberService.getTripMembers(id);
+            for (TripMembers member : members) {
+                if (member.getUserEmail().equals(userEmail))
+                    continue;
+                String message = userEmail+"님이 ["+tripService.getTrip(id).getTripTitle() + "] 여행을 삭제했습니다.";
+                notificationService.notifyUser(member.getUserEmail(), message);
+            }
+
+
             tripMemberService.deleteTripMember(id);
             tripDetailService.deleteTripDetail(id);
             tripService.deleteTrip(id);
+
+
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -266,7 +281,7 @@ public class TripController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<HttpStatus> updateTrip(@RequestHeader("Authorization") String token,
-                                                 @PathVariable("id") Long tripId, @RequestBody TripUpdateRequest tripRequest) throws ParseException {
+                                                 @PathVariable("id") Long tripId, @RequestBody TripUpdateRequest tripRequest) throws Exception {
         System.out.println("update trip");
 
         //login check
@@ -315,6 +330,13 @@ public class TripController {
                         .build());
             }
             tripIndex++;
+        }
+        List<TripMembers> members = tripMemberService.getTripMembers(tripId);
+        for (TripMembers member : members) {
+            if (member.getUserEmail().equals(userEmail))
+                continue;
+            String message = userEmail+"님이 ["+tripService.getTrip(tripId).getTripTitle() + "] 여행을 수정했습니다.";
+            notificationService.notifyUser(member.getUserEmail(), message);
         }
 
         return new ResponseEntity<>(HttpStatus.OK);
