@@ -46,6 +46,8 @@ public class BoardController {
     private final LocationService locationService;
     private final BoardLikeService boardLikeService;
 
+//    private final NotificationService notificationService;
+
 
     @PostMapping
     public ResponseEntity<HttpStatus> registerBoard(@RequestHeader("Authorization") String token,
@@ -265,6 +267,8 @@ public class BoardController {
         if(userEmail == null){
             return ResponseEntity.ok(HttpStatus.UNAUTHORIZED);
         }
+        Boards board = boardService.getBoardId(boardLikeDto.getBoardId());
+        //notificationService.sendNotification(board.getUserEmail(), "좋아요를 눌렀습니다.");
 
         System.out.println(boardLikeDto.getBoardId() + " " + boardLikeDto.getIsLiked());
         if(boardLikeDto.getIsLiked())

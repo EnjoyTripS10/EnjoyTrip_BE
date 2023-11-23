@@ -52,6 +52,7 @@ public class UserService {
         return LoginResponse.builder()
                 .id(user.getId())
                 .accessToken(socialAuthResponse.getAccess_token())
+                .userEmail(user.getUserEmail())
                 .build();
     }
 
