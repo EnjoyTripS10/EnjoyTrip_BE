@@ -1,5 +1,6 @@
 package com.study.sociallogin.controller;
 
+import com.study.sociallogin.config.NotificationService;
 import com.study.sociallogin.dto.BoardDto;
 import com.study.sociallogin.dto.BoardLocationDto;
 import com.study.sociallogin.dto.BoardResponse;
@@ -46,7 +47,7 @@ public class BoardController {
     private final LocationService locationService;
     private final BoardLikeService boardLikeService;
 
-//    private final NotificationService notificationService;
+    private final NotificationService notificationService;
 
 
     @PostMapping
@@ -260,7 +261,7 @@ public class BoardController {
     //좋아요누르기 controller
     @PostMapping("/like")
     public ResponseEntity<HttpStatus> likeBoard(@RequestHeader("Authorization") String token,
-                                                @RequestBody BoardLikeDto boardLikeDto) {
+                                                @RequestBody BoardLikeDto boardLikeDto) throws Exception {
         System.out.println("like board");
         //login check
         String userEmail = userService.getUserEmailFromToken(token);
@@ -271,8 +272,11 @@ public class BoardController {
         //notificationService.sendNotification(board.getUserEmail(), "좋아요를 눌렀습니다.");
 
         System.out.println(boardLikeDto.getBoardId() + " " + boardLikeDto.getIsLiked());
-        if(boardLikeDto.getIsLiked())
+        if(boardLikeDto.getIsLiked()) {
             boardLikeService.createBoardLike(boardLikeDto.getBoardId(), userEmail);
+            String message = userEmail + "님이 회원님의 게시글을 좋아합니다.";
+            notificationService.notifyUser(board.getUserEmail(), message);
+        }
         else
             boardLikeService.removeBoardLike(boardLikeDto.getBoardId(), userEmail);
 
