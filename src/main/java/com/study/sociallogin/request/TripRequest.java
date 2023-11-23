@@ -19,4 +19,5 @@ public class TripRequest {
     private String tripDetails;
     private List<List<TripDetailDto>> locationList;
     private boolean mine;
+    private boolean owner;
 }

@@ -166,8 +166,13 @@ public class TripController {
         List<TripMembers> users = tripMemberService.getTripMembers(id);
         List<TripMemberDto> userList = new ArrayList<>();
         boolean mine = false;
+        boolean owner = false;
         for (TripMembers member : users) {
-            if(userEmail.equals(member.getUserEmail())) mine = true;
+            if(userEmail.equals(member.getUserEmail())){
+                mine = true;
+                if(member.isOwner())
+                    owner = true;
+            }
             UserResponse user = userService.getUserEmail(member.getUserEmail());
             userList.add(TripMemberDto.builder()
                     .userEmail(member.getUserEmail())
@@ -188,6 +193,7 @@ public class TripController {
                         .locationList(locationList)
                         .users(userList)
                         .mine(mine)
+                        .owner(owner)
                         .build()
         );
 
