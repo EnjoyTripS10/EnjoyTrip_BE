@@ -274,7 +274,7 @@ public class BoardController {
         System.out.println(boardLikeDto.getBoardId() + " " + boardLikeDto.getIsLiked());
         if(boardLikeDto.getIsLiked()) {
             boardLikeService.createBoardLike(boardLikeDto.getBoardId(), userEmail);
-            String message = userEmail + "님이 회원님의 게시글을 좋아합니다.";
+            String message = userEmail + "님이 회원님의 ["+board.getBoardTitle()+"]게시글을 좋아합니다.";
             notificationService.notifyUser(board.getUserEmail(), message);
         }
         else
