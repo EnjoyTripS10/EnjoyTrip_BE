@@ -1,2 +1,2 @@
-# virus_be
+# EnjoyTrip_BackEnd
 backend part
